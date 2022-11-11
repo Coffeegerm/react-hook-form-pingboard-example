@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+
+form * {
+  margin: 0.5rem 0;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+}
