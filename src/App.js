@@ -7,25 +7,55 @@ import {
   useWatch, // hook to watch a field
 } from "react-hook-form";
 
-const Input = ({ name }) => {
-  return (
-    <div>
-      <label htmlFor={name}>Input</label>
-      <input name={name} />
-    </div>
-  );
-};
+// const Input = ({ name }) => {
+//   return (
+//     <div>
+//       <label htmlFor={name}>Input</label>
+//       <input name={name} />
+//     </div>
+//   );
+// };
 
-const ContextInput = () => {
-  const context = useFormContext();
-  if (!context) {
+const AddressInput = () => {
+  const { control, formState } = useFormContext();
+  if (!control) {
     return null;
   }
+  console.log({ formState });
+  const { register } = control;
+  const errors = formState?.errors;
   return (
-    <div className={"inputRow"}>
-      <label htmlFor="address">Address</label>
-      <input name="address" {...context.register} placeholder="123 Love Lane, Paris, France" />
-    </div>
+    <>
+      <div className={"inputRow"}>
+        <label htmlFor="addressLine1">Address Line 1</label>
+        <input
+          {...register("addressLine1", {
+            required: { value: true, message: "We must know your address." },
+          })}
+          placeholder="123 Love Lane"
+        />
+      </div>
+
+      <div className={"inputRow"}>
+        <label htmlFor="addressLine2">Address Line 2 (Optional)</label>
+        <input {...register("addressLine2")} placeholder="123 Love Lane" />
+      </div>
+
+      <div className={"inputRow"}>
+        <label htmlFor="zipCode">Zip Code</label>
+        <input {...register("zipCode")} placeholder="123 Love Lane" />
+      </div>
+
+      <div className={"inputRow"}>
+        <label htmlFor="city">City</label>
+        <input {...register("city")} placeholder="Paris" />
+      </div>
+
+      <div className={"inputRow"}>
+        <label htmlFor="state">State</label>
+        <input {...register("state")} placeholder="Indiana" />
+      </div>
+    </>
   );
 };
 
@@ -58,15 +88,24 @@ function App() {
     reValidateMode: "onChange", // onChange, onBlur, onSubmit
   });
 
-  const values = getValues();
+  const errors = formState?.errors || undefined;
 
-  const fields = watch();
+  const values = watch();
 
-  console.log({ values, fields });
+  const onFormValid = (data) => {
+    alert("Form is valid");
+    console.info(data);
+  };
+
+  const onFormInvalid = (data) => {
+    alert("Form is invalid");
+    console.error(data);
+  };
 
   return (
     <div className="App" style={{ flex: 1 }}>
       <h2>React, and hooks, and forms, oh my!</h2>
+      <button onClick={() => reset()}>Reset Form</button>
       <div
         style={{
           display: "flex",
@@ -74,11 +113,22 @@ function App() {
           justifyContent: "space-around",
         }}
       >
-        <form style={{ flex: 1 }}>
+        <form
+          style={{ flex: 1 }}
+          onSubmit={handleSubmit(onFormValid, onFormInvalid)}
+        >
           <div className={"inputRow"}>
             <label htmlFor="firstName">First Name</label>
             {/* register is a function that takes a field name and returns an object with props to be spread on an input */}
-            <input {...register("firstName")} placeholder="John" />
+            <input
+              {...register("firstName", {
+                required: {
+                  value: true,
+                  message: "We must know your first name.",
+                },
+              })}
+              placeholder="John"
+            />
           </div>
 
           {/** we can use controller to create our controlled inputs */}
@@ -98,23 +148,48 @@ function App() {
                 </div>
               );
             }}
+            rules={{
+              required: {
+                value: true,
+                message: "We must know your last name.",
+              },
+            }}
           />
 
           {/** we can also use the context to access the form state */}
           <FormProvider control={control}>
-            <ContextInput />
+            <AddressInput />
           </FormProvider>
 
-          <button onClick={() => reset()}>Reset Form</button>
+          <button type="submit">Submit</button>
         </form>
 
         <div style={{ flex: 1 }}>
           <div>
             <h2>Form State</h2>
-            <pre style={{ backgroundColor: "lightgray", padding: "1rem", borderRadius: '1rem', margin: '0 1rem' }}>
+            <pre
+              style={{
+                backgroundColor: "lightgray",
+                padding: "1rem",
+                borderRadius: "1rem",
+                margin: "0 1rem",
+              }}
+            >
               <code style={{ flex: 1 }}>{JSON.stringify(values, null, 2)}</code>
             </pre>
           </div>
+          <pre
+            style={{
+              backgroundColor: "lightgray",
+              padding: "1rem",
+              borderRadius: "1rem",
+              margin: "1rem",
+            }}
+          >
+            <code style={{ flex: 1 }}>
+              {JSON.stringify(formState, null, 2)}
+            </code>
+          </pre>
         </div>
       </div>
     </div>
