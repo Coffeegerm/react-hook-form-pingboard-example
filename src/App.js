@@ -6,6 +6,7 @@ import {
   useFormContext, // hook to access the form context, this can return undefined if you are not inside a FormProvider
   useWatch, // hook to watch a field
 } from "react-hook-form";
+import { ErrorMessage } from "@hookform/error-message";
 
 // const Input = ({ name }) => {
 //   return (
@@ -17,13 +18,12 @@ import {
 // };
 
 const AddressInput = () => {
-  const { control, formState } = useFormContext();
-  if (!control) {
+  const context = useFormContext();
+  if (!context) {
     return null;
   }
-  console.log({ formState });
-  const { register } = control;
-  const errors = formState?.errors;
+  const { register, formState, control } = context;
+  const { errors } = formState;
   return (
     <>
       <div className={"inputRow"}>
@@ -35,31 +35,112 @@ const AddressInput = () => {
           placeholder="123 Love Lane"
         />
       </div>
+      <ErrorMessage
+        errors={errors}
+        name="addressLine1"
+        render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+      />
 
       <div className={"inputRow"}>
         <label htmlFor="addressLine2">Address Line 2 (Optional)</label>
-        <input {...register("addressLine2")} placeholder="123 Love Lane" />
+        <input
+          {...register("addressLine2", {
+            required: {
+              value: false,
+            },
+          })}
+          placeholder="Apt 130"
+        />
       </div>
+      <ErrorMessage
+        errors={errors}
+        name="addressLine2"
+        render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+      />
 
       <div className={"inputRow"}>
         <label htmlFor="zipCode">Zip Code</label>
-        <input {...register("zipCode")} placeholder="123 Love Lane" />
+        <input
+          {...register("zipCode", {
+            required: { value: true, message: "We must know your zip code." },
+            minLength: { value: 5, message: "Zip code must be 5 digits." },
+            maxLength: { value: 5, message: "Zip code must be 5 digits." },
+          })}
+          placeholder="23223"
+        />
       </div>
+      <ErrorMessage
+        errors={errors}
+        name="zipCode"
+        render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+      />
 
       <div className={"inputRow"}>
         <label htmlFor="city">City</label>
-        <input {...register("city")} placeholder="Paris" />
+        <input
+          {...register("city", {
+            required: {
+              value: true,
+              message: "We must know your city.",
+            },
+            minLength: {
+              value: 3,
+              message: "Must be at least 3 characters.",
+            },
+          })}
+          placeholder="Richmond"
+        />
       </div>
-
-      <div className={"inputRow"}>
-        <label htmlFor="state">State</label>
-        <input {...register("state")} placeholder="Indiana" />
-      </div>
+      <ErrorMessage
+        errors={errors}
+        name="city"
+        render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+      />
+      {/** we can use controller to create our controlled inputs, even in a context */}
+      <Controller
+        name="state"
+        control={control}
+        render={({ field: { value, name, onChange, ref } }) => {
+          return (
+            <div className={"inputRow"}>
+              <label htmlFor={name}>State</label>
+              <input onChange={onChange} name={name} value={value} placeholder="VA" />
+            </div>
+          );
+        }}
+        rules={{
+          required: {
+            value: true,
+            message: "We must know your state.",
+          },
+          minLength: {
+            value: 2,
+            message: "Must be at least 2 characters.",
+          },
+        }}
+      />
+      <ErrorMessage
+        errors={errors}
+        name="state"
+        render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+      />
     </>
   );
 };
 
 function App() {
+  const formMethods = useForm({
+    mode: "onChange", // onChange, onBlur, onSubmit
+    defaultValues: {},
+    criteriaMode: "all", // all, firstError
+    shouldFocusError: true, // focus on the first error
+    shouldUnregister: true, // unregister fields when they are removed from the DOM
+    delayError: 0, // delay the error message
+    resolver: undefined, // custom resolver
+    context: undefined, // custom context
+    reValidateMode: "onChange", // onChange, onBlur, onSubmit
+  });
+
   const {
     register,
     control,
@@ -76,19 +157,9 @@ function App() {
     trigger, // trigger validation
     unregister, // remove a field from the form
     watch, // think of this as a subscribe to the form state, it will return the value of the field you are watching
-  } = useForm({
-    mode: "onChange", // onChange, onBlur, onSubmit
-    defaultValues: {},
-    criteriaMode: "all", // all, firstError
-    shouldFocusError: true, // focus on the first error
-    shouldUnregister: true, // unregister fields when they are removed from the DOM
-    delayError: 0, // delay the error message
-    resolver: undefined, // custom resolver
-    context: undefined, // custom context
-    reValidateMode: "onChange", // onChange, onBlur, onSubmit
-  });
+  } = formMethods;
 
-  const errors = formState?.errors || undefined;
+  const errors = formState?.errors;
 
   const values = watch();
 
@@ -130,6 +201,11 @@ function App() {
               placeholder="John"
             />
           </div>
+          <ErrorMessage
+            errors={errors}
+            name="firstName"
+            render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+          />
 
           {/** we can use controller to create our controlled inputs */}
           <Controller
@@ -155,13 +231,20 @@ function App() {
               },
             }}
           />
+          <ErrorMessage
+            errors={errors}
+            name="lastName"
+            render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+          />
 
           {/** we can also use the context to access the form state */}
-          <FormProvider control={control}>
+          <FormProvider {...formMethods}>
             <AddressInput />
           </FormProvider>
 
-          <button type="submit">Submit</button>
+          <button type="submit" disabled={!formState.isValid}>
+            Submit
+          </button>
         </form>
 
         <div style={{ flex: 1 }}>
@@ -178,18 +261,6 @@ function App() {
               <code style={{ flex: 1 }}>{JSON.stringify(values, null, 2)}</code>
             </pre>
           </div>
-          <pre
-            style={{
-              backgroundColor: "lightgray",
-              padding: "1rem",
-              borderRadius: "1rem",
-              margin: "1rem",
-            }}
-          >
-            <code style={{ flex: 1 }}>
-              {JSON.stringify(formState, null, 2)}
-            </code>
-          </pre>
         </div>
       </div>
     </div>
