@@ -96,6 +96,7 @@ const AddressInput = () => {
         name="city"
         render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
       />
+
       {/** we can use controller to create our controlled inputs, even in a context */}
       <Controller
         name="state"
@@ -104,7 +105,12 @@ const AddressInput = () => {
           return (
             <div className={"inputRow"}>
               <label htmlFor={name}>State</label>
-              <input onChange={onChange} name={name} value={value} placeholder="VA" />
+              <input
+                onChange={onChange}
+                name={name}
+                value={value}
+                placeholder="VA"
+              />
             </div>
           );
         }}
@@ -234,6 +240,31 @@ function App() {
           <ErrorMessage
             errors={errors}
             name="lastName"
+            render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+          />
+
+          <div className={"inputRow"}>
+            <label htmlFor="age">Age</label>
+            {/* register is a function that takes a field name and returns an object with props to be spread on an input */}
+            <input
+              type="number"
+              {...register("age", {
+                valueAsNumber: true,
+                required: {
+                  value: true,
+                  message: "We must know your age.",
+                },
+                min: {
+                  value: 13,
+                  message: "You must be at least 13 years old.",
+                }
+              })}
+              placeholder="13"
+            />
+          </div>
+          <ErrorMessage
+            errors={errors}
+            name="age"
             render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
           />
 
