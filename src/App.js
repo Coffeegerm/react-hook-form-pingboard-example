@@ -8,16 +8,7 @@ import {
 } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 
-// const Input = ({ name }) => {
-//   return (
-//     <div>
-//       <label htmlFor={name}>Input</label>
-//       <input name={name} />
-//     </div>
-//   );
-// };
-
-const AddressInput = () => {
+function AddressInput() {
   const context = useFormContext();
   if (!context) {
     return null;
@@ -132,9 +123,9 @@ const AddressInput = () => {
       />
     </>
   );
-};
+}
 
-function App() {
+export default function App() {
   const formMethods = useForm({
     mode: "onChange", // onChange, onBlur, onSubmit
     defaultValues: {},
@@ -297,5 +288,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
