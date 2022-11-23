@@ -248,7 +248,7 @@ export default function App() {
                 min: {
                   value: 13,
                   message: "You must be at least 13 years old.",
-                }
+                },
               })}
               placeholder="13"
             />
