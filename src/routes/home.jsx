@@ -28,7 +28,7 @@ function AddressInput() {
       <ErrorMessage
         errors={errors}
         name="addressLine1"
-        render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+        render={({ message }) => <p className="text-red-500">{message}</p>}
       />
 
       <div className={"inputRow"}>
@@ -45,7 +45,7 @@ function AddressInput() {
       <ErrorMessage
         errors={errors}
         name="addressLine2"
-        render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+        render={({ message }) => <p className="text-red-500">{message}</p>}
       />
 
       <div className={"inputRow"}>
@@ -62,7 +62,7 @@ function AddressInput() {
       <ErrorMessage
         errors={errors}
         name="zipCode"
-        render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+        render={({ message }) => <p className="text-red-500">{message}</p>}
       />
 
       <div className={"inputRow"}>
@@ -84,7 +84,7 @@ function AddressInput() {
       <ErrorMessage
         errors={errors}
         name="city"
-        render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+        render={({ message }) => <p className="text-red-500">{message}</p>}
       />
 
       {/** we can use controller to create our controlled inputs, even in a context */}
@@ -118,7 +118,7 @@ function AddressInput() {
       <ErrorMessage
         errors={errors}
         name="state"
-        render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+        render={({ message }) => <p className="text-red-500">{message}</p>}
       />
     </>
   );
@@ -170,21 +170,15 @@ export function Home() {
   };
 
   return (
-    <div className="App" style={{ flex: 1 }}>
+    <div className="App flex-1">
       <h2>React, and hooks, and forms, oh my!</h2>
       <button onClick={() => reset()}>Reset Form</button>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around",
-        }}
-      >
+      <div className="flex flex-row justify-around">
         <form
-          style={{ flex: 1 }}
+          className="flex-1"
           onSubmit={handleSubmit(onFormValid, onFormInvalid)}
         >
-          <div className={"inputRow"}>
+          <div className="inputRow">
             <label htmlFor="firstName">First Name</label>
             {/* register is a function that takes a field name and returns an object with props to be spread on an input */}
             <input
@@ -200,7 +194,7 @@ export function Home() {
           <ErrorMessage
             errors={errors}
             name="firstName"
-            render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+            render={({ message }) => <p className="text-red-500">{message}</p>}
           />
 
           {/** we can use controller to create our controlled inputs */}
@@ -230,7 +224,7 @@ export function Home() {
           <ErrorMessage
             errors={errors}
             name="lastName"
-            render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+            render={({ message }) => <p className="text-red-500">{message}</p>}
           />
 
           <div className={"inputRow"}>
@@ -255,7 +249,7 @@ export function Home() {
           <ErrorMessage
             errors={errors}
             name="age"
-            render={({ message }) => <p style={{ color: "red" }}>{message}</p>}
+            render={({ message }) => <p className="text-red-500">{message}</p>}
           />
 
           {/** we can also use the context to access the form state */}
@@ -268,18 +262,11 @@ export function Home() {
           </button>
         </form>
 
-        <div style={{ flex: 1 }}>
+        <div className="flex-1">
           <div>
             <h2>Form State</h2>
-            <pre
-              style={{
-                backgroundColor: "lightgray",
-                padding: "1rem",
-                borderRadius: "1rem",
-                margin: "0 1rem",
-              }}
-            >
-              <code style={{ flex: 1 }}>{JSON.stringify(values, null, 2)}</code>
+            <pre className="margin-1 bg-gray-300 rounded-md p-4 m-4">
+              <code className="flex-1">{JSON.stringify(values, null, 2)}</code>
             </pre>
           </div>
         </div>
